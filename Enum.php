@@ -1,11 +1,7 @@
 <?php
 
 abstract class Enum {
-    /**
-     * @var ReflectionClass
-     */
-    protected static $_refs;
-    
+  
     /**
      * @return string
      */ 
@@ -31,10 +27,7 @@ abstract class Enum {
      * @return ReflectionClass
      */
     public static function getRef() {
-        if (!self::$_refs) {
-            self::$_refs = new ReflectionClass(self::getClassName());
-        }
-        return self::$_refs;
+        return new ReflectionClass(self::getClassName());
     }
 
     /**
