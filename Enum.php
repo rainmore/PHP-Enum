@@ -1,11 +1,5 @@
 <?php
 abstract class Enum {
-
-    /**
-     * @var array
-     */
-    private static $values;
-
     /**
      * @var mixed
      */
@@ -32,7 +26,7 @@ abstract class Enum {
     /**
      * @return mixed
      */
-    protected function getValue() {
+    public function getValue() {
         return $this->value;
     }
 
@@ -55,10 +49,7 @@ abstract class Enum {
      * @return array
      */
     public static function toArray() {
-        if (!self::$values) {
-            self::$values = self::getRef()->getConstants();
-        }
-        return self::values;
+        return self::getRef()->getConstants();
     }
 
     /**
