@@ -1,16 +1,25 @@
 <?php
 abstract class Enum {
-    /**
-     * @var ReflectionClass
-     */
-    protected static $_refs;
 
+    /**
+     * @var array
+     */
+    private static $values;
+
+    /**
+     * @var mixed
+     */
     private $value;
 
     public function __construct($value) {
         $this->setValue($value);
     }
 
+    /**
+     * @param $value
+     * @return $this
+     * @throws InvalidArgumentException
+     */
     private function setValue($value) {
         if (!$this->contains($value)) {
             throw new InvalidArgumentException();
@@ -20,33 +29,36 @@ abstract class Enum {
         return $this;
     }
 
+    /**
+     * @return mixed
+     */
     protected function getValue() {
         return $this->value;
     }
 
+    /**
+     * @param Enum $enum
+     * @return bool
+     */
     public function equals(Enum $enum) {
         return (get_class($enum) == get_class($this) && $enum->getValue() === $this->getValue());
     }
 
     /**
-     * @return string
-     */
-    public static function getClassName() {
-        return get_called_class();
-    }
-
-    /**
      * @return ReflectionClass
      */
-    public static function getRef() {
-        return new ReflectionClass(self::getClassName());
+    private static function getRef() {
+        return new ReflectionClass(get_called_class());
     }
 
     /**
      * @return array
      */
     public static function toArray() {
-        return self::getRef()->getConstants();
+        if (!self::$values) {
+            self::$values = self::getRef()->getConstants();
+        }
+        return self::values;
     }
 
     /**
@@ -64,6 +76,9 @@ abstract class Enum {
         return in_array($value, self::toArray());
     }
 
+    /**
+     * @return string
+     */
     public function __toString() {
         return (string) $this->getValue();
     }
