@@ -1,12 +1,56 @@
 <?php
+
 abstract class Enum {
+
     /**
      * @var mixed
      */
     private $value;
 
+    /**
+     * @deprecated("use valueOf() instead")
+     * @param $value
+     */
     public function __construct($value) {
         $this->setValue($value);
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString() {
+        return (string) $this->getValue();
+    }
+
+    /**
+     * @param $name
+     * @param array $args
+     * @return Enum
+     */
+    public static function __callStatic($name, array $args) {
+        if (substr($name, 0, 3) == 'get') {
+            $constant = strtoupper(substr($name, 3));
+            if (self::exists($constant)) {
+                return self::valueOf(self::value($constant));
+            }
+        }
+
+        return parent::__callStatic($name, $args);
+    }
+
+    /**
+     * @param $value
+     * @return static
+     */
+    public static function valueOf($value) {
+        return new static($value);
+    }
+
+    /**
+     * @return string name of the constant
+     */
+    public function getName() {
+        return array_search($this->getValue(), self::toArray(), true);
     }
 
     /**
@@ -15,7 +59,7 @@ abstract class Enum {
      * @throws InvalidArgumentException
      */
     private function setValue($value) {
-        if (!$this->contains($value)) {
+        if (!self::contains($value)) {
             throw new InvalidArgumentException();
         }
 
@@ -68,9 +112,19 @@ abstract class Enum {
     }
 
     /**
-     * @return string
+     * @param $constant
+     * @return bool
      */
-    public function __toString() {
-        return (string) $this->getValue();
+    public static function exists($constant) {
+        return array_key_exists(strtoupper($constant), self::toArray());
     }
+
+    /**
+     * @param $constant
+     * @return null
+     */
+    private static function value($constant) {
+        return ifx(self::toArray(), strtoupper($constant));
+    }
+
 }
