@@ -1,0 +1,1 @@
+Typesafe for php constant. 
